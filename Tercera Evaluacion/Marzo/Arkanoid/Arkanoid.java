@@ -136,7 +136,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 				int titleLen = fontMetrics.stringWidth(text);
 				int titleHeight = fontMetrics.getHeight();
 				g.drawString(text, (ANCHURA_PANTALLA / 2) - (titleLen / 2),
-						titleHeight + 5);
+						titleHeight + 15);
 
 			}
 		}
@@ -264,13 +264,18 @@ public class Arkanoid extends JFrame implements KeyListener {
 	}
 
 	void testCollision(Paddle mPaddle, Ball mBall) {
+		
+		Random rd = new Random();
+		
+		int x = rd.nextInt(2);
+		
 		if (!isIntersecting(mPaddle, mBall))
 			return;
 		mBall.velocityY = -VELOCIDAD_BOLA;
 		if (mBall.x < mPaddle.x)
-			mBall.velocityX = -VELOCIDAD_BOLA;
+			mBall.velocityX = (-VELOCIDAD_BOLA + x);
 		else
-			mBall.velocityX = VELOCIDAD_BOLA;
+			mBall.velocityX = (VELOCIDAD_BOLA + x);
 	}
 
 	void testCollision(Brick mBrick, Ball mBall, ScoreBoard scoreboard) {
@@ -306,7 +311,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 		for (int iX = 0; iX < CANTIDAD_BLOQUES_X; ++iX) {
 			for (int iY = 0; iY < CANTIDAD_BLOQUES_Y; ++iY) {
 				bricks.add(new Brick((iX + 1) * (ANCHURA_BLOQUE + 3) + 22,
-						(iY + 2) * (ALTURA_BLOQUE + 3) + 20));
+						(iY + 2) * (ALTURA_BLOQUE + 3) + 30));
 			}
 		}
 	}
