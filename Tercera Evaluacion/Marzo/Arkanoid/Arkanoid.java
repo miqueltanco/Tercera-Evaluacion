@@ -264,18 +264,14 @@ public class Arkanoid extends JFrame implements KeyListener {
 	}
 
 	void testCollision(Paddle mPaddle, Ball mBall) {
-		
-		Random rd = new Random();
-		
-		int x = rd.nextInt(2);
-		
+			
 		if (!isIntersecting(mPaddle, mBall))
 			return;
 		mBall.velocityY = -VELOCIDAD_BOLA;
 		if (mBall.x < mPaddle.x)
-			mBall.velocityX = (-VELOCIDAD_BOLA + x);
+			mBall.velocityX = -VELOCIDAD_BOLA;
 		else
-			mBall.velocityX = (VELOCIDAD_BOLA + x);
+			mBall.velocityX = VELOCIDAD_BOLA;
 	}
 
 	void testCollision(Brick mBrick, Ball mBall, ScoreBoard scoreboard) {
