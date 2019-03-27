@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 public class Arkanoid extends JFrame implements KeyListener {
@@ -22,7 +23,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 	private static final long serialVersionUID = 1L;
 	private static final String SL = System.getProperty("line.separator");
-	
+
 	public static final int ANCHURA_PANTALLA = 800;
 	public static final int ALTURA_PANTALLA = 800;
 
@@ -46,6 +47,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 	public static final String FONT = "Conthrax sb";
 	public static final String SONIDOMUERTE = "C:\\temp\\Arkanoid\\sonidomuerte.mp3";
+	public static final String BACKGROUND = "\\Items\\imagen 2.gif";
 
 	/* VARIABLES DEL JUEGO */
 
@@ -57,7 +59,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 	private Ball ball = new Ball(ANCHURA_PANTALLA / 2, ALTURA_PANTALLA / 2);
 	private List<Brick> bricks = new ArrayList<Arkanoid.Brick>();
 	private ScoreBoard scoreboard = new ScoreBoard();
-	
+
 
 	private double lastFt;
 	private double currentSlice;
@@ -109,12 +111,23 @@ public class Arkanoid extends JFrame implements KeyListener {
 			}
 		}
 
+		void paused() {
+			if (paused) {
+				text = "Pausa";
+			} else {
+				updateScoreboard();
+			}
+
+		}
+
+
+
 		void updateScoreboard() {
 			text = "Puntuación: " + score + "  Vidas: " + lives;
 		}
 
 		void draw(Graphics g) {
-			if (win || gameOver) {
+			if (win || gameOver || paused) {
 				font = font.deriveFont(50f);
 				FontMetrics fontMetrics = g.getFontMetrics(font);
 				g.setColor(Color.WHITE);
@@ -221,7 +234,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void update(ScoreBoard scoreBoard, Paddle paddle) {
-			
+
 			x += velocityX * FT_STEP;
 			y += velocityY * FT_STEP;
 
@@ -264,7 +277,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 	}
 
 	void testCollision(Paddle mPaddle, Ball mBall) {
-			
+
 		if (!isIntersecting(mPaddle, mBall))
 			return;
 		mBall.velocityY = -VELOCIDAD_BOLA;
@@ -330,6 +343,9 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 	void run() {
 
+		/* String background = "\\Items\\imagen 2.gif";
+		ImageIcon fondo = new ImageIcon(new ImageIcon(getClass().getResource(background)).getImage()); */
+
 		BufferStrategy bf = this.getBufferStrategy();
 		Graphics g = bf.getDrawGraphics();
 		g.setColor(Color.black);
@@ -373,6 +389,15 @@ public class Arkanoid extends JFrame implements KeyListener {
 					ball.y = ALTURA_PANTALLA / 2;
 					paddle.x = ANCHURA_PANTALLA / 2;
 				}
+				else if(paused && !scoreboard.gameOver){
+					scoreboard.paused();
+					drawScene(ball, bricks, scoreboard);
+
+					if(!paused) {
+						scoreboard.updateScoreboard();
+					}
+
+				}
 			}
 
 			long time2 = System.currentTimeMillis();
@@ -383,7 +408,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 			double seconds = elapsedTime / 1000.0;
 			if (seconds > 0.0) {
 				double fps = 1.0 / seconds;
-				this.setTitle("FPS: " + fps);
+				this.setTitle("FPS: " + (int)fps);
 			}
 
 		}
@@ -416,16 +441,17 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 	private void drawScene(Ball ball, List<Brick> bricks, ScoreBoard scoreboard) {
 		// Code for the drawing goes here.
+		
+		ImageIcon fondo = new ImageIcon(new ImageIcon(getClass().getResource(BACKGROUND)).getImage());
+		
 		BufferStrategy bf = this.getBufferStrategy();
 		Graphics g = null;
 
 		try {
-
 			g = bf.getDrawGraphics();
-
-			g.setColor(Color.black); //AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+			g.setColor(Color.black);												
 			g.fillRect(0, 0, getWidth(), getHeight());
-
+			//g.drawImage(fondo.getImage(), 0, 0, ANCHURA_PANTALLA, ALTURA_PANTALLA, null);
 			ball.draw(g);
 			paddle.draw(g);
 			for (Brick brick : bricks) {
@@ -437,6 +463,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 			g.dispose();
 		}
 
+				
 		bf.show();
 
 		Toolkit.getDefaultToolkit().sync();
@@ -486,9 +513,9 @@ public class Arkanoid extends JFrame implements KeyListener {
 	}
 
 	public static void main(String[] args) {
-		
+
 		new Arkanoid().run();
-		
+
 	}
 
 }
