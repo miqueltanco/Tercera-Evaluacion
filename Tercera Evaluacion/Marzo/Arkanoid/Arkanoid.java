@@ -325,12 +325,15 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 	public Arkanoid() {
 
+		ImageIcon bola = new ImageIcon(new ImageIcon(getClass().getResource(BOLA)).getImage());
+		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setUndecorated(false);
 		this.setResizable(false);
 		this.setSize(ANCHURA_PANTALLA, ALTURA_PANTALLA);
 		this.setVisible(true);
 		this.addKeyListener(this);
+		this.setIconImage(bola.getImage()); //ESTEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE CAMBIA EL ICONO
 		this.setLocationRelativeTo(null);
 
 		this.createBufferStrategy(2);
