@@ -12,7 +12,6 @@ import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -47,7 +46,9 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 	public static final String FONT = "Conthrax sb";
 	public static final String SONIDOMUERTE = "C:\\temp\\Arkanoid\\sonidomuerte.mp3";
-	public static final String BACKGROUND = "\\Items\\imagen 2.gif";
+	public static final String BACKGROUND = "\\Items\\imagen 3.png";
+	public static final String PALETA = "\\Items\\paleta.png";
+	public static final String BOLA = "\\Items\\bola.png";
 
 	/* VARIABLES DEL JUEGO */
 
@@ -59,7 +60,6 @@ public class Arkanoid extends JFrame implements KeyListener {
 	private Ball ball = new Ball(ANCHURA_PANTALLA / 2, ALTURA_PANTALLA / 2);
 	private List<Brick> bricks = new ArrayList<Arkanoid.Brick>();
 	private ScoreBoard scoreboard = new ScoreBoard();
-
 
 	private double lastFt;
 	private double currentSlice;
@@ -102,6 +102,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 			}
 
 			lives--;
+			
 			if (lives == 0) {
 				gameOver = true;
 				text = "¡Has perdido!" + SL  + "Puntuacion: " + score
@@ -117,10 +118,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 			} else {
 				updateScoreboard();
 			}
-
 		}
-
-
 
 		void updateScoreboard() {
 			text = "Puntuación: " + score + "  Vidas: " + lives;
@@ -139,7 +137,6 @@ public class Arkanoid extends JFrame implements KeyListener {
 					g.drawString(line, (ANCHURA_PANTALLA / 2) - (titleLen / 2),
 							(ALTURA_PANTALLA / 4) + (titleHeight * lineNumber));
 					lineNumber++;
-
 				}
 			} else {
 				font = font.deriveFont(34f);
@@ -150,10 +147,8 @@ public class Arkanoid extends JFrame implements KeyListener {
 				int titleHeight = fontMetrics.getHeight();
 				g.drawString(text, (ANCHURA_PANTALLA / 2) - (titleLen / 2),
 						titleHeight + 15);
-
 			}
 		}
-
 	}
 
 	class Paddle extends Rectangle {
@@ -192,10 +187,11 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void draw(Graphics g) {
-			g.setColor(Color.RED);
-			g.fillRect((int) (left()), (int) (top()), (int) sizeX, (int) sizeY);
-		}
 
+			ImageIcon paleta = new ImageIcon(new ImageIcon(getClass().getResource(PALETA)).getImage());			
+
+			g.drawImage(paleta.getImage(), (int) (left()), (int) (top()), (int) sizeX, (int) sizeY, null);
+		}
 	}
 
 	class Brick extends Rectangle {
@@ -228,9 +224,11 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void draw(Graphics g) {
-			g.setColor(Color.RED);
-			g.fillOval((int) left(), (int) top(), (int) radius * 2,
-					(int) radius * 2);
+			
+			ImageIcon bola = new ImageIcon(new ImageIcon(getClass().getResource(BOLA)).getImage());			
+
+			g.drawImage(bola.getImage(), (int) left(), (int) top(), (int) radius * 2,(int) radius * 2, null);
+			//g.fillOval((int) left(), (int) top(), (int) radius * 2,(int) radius * 2);
 		}
 
 		void update(ScoreBoard scoreBoard, Paddle paddle) {
@@ -338,14 +336,10 @@ public class Arkanoid extends JFrame implements KeyListener {
 		this.createBufferStrategy(2);
 
 		initializeBricks(bricks);
-
 	}
 
 	void run() {
-
-		/* String background = "\\Items\\imagen 2.gif";
-		ImageIcon fondo = new ImageIcon(new ImageIcon(getClass().getResource(background)).getImage()); */
-
+		
 		BufferStrategy bf = this.getBufferStrategy();
 		Graphics g = bf.getDrawGraphics();
 		g.setColor(Color.black);
@@ -399,7 +393,6 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 				}
 			}
-
 			long time2 = System.currentTimeMillis();
 			double elapsedTime = time2 - time1;
 
@@ -412,7 +405,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 			}
 
 		}
-
+		
 		this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 
 	}
@@ -441,9 +434,9 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 	private void drawScene(Ball ball, List<Brick> bricks, ScoreBoard scoreboard) {
 		// Code for the drawing goes here.
-		
+
 		ImageIcon fondo = new ImageIcon(new ImageIcon(getClass().getResource(BACKGROUND)).getImage());
-		
+
 		BufferStrategy bf = this.getBufferStrategy();
 		Graphics g = null;
 
@@ -451,7 +444,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 			g = bf.getDrawGraphics();
 			g.setColor(Color.black);												
 			g.fillRect(0, 0, getWidth(), getHeight());
-			//g.drawImage(fondo.getImage(), 0, 0, ANCHURA_PANTALLA, ALTURA_PANTALLA, null);
+			g.drawImage(fondo.getImage(), 0, 0, ANCHURA_PANTALLA, ALTURA_PANTALLA, null);
 			ball.draw(g);
 			paddle.draw(g);
 			for (Brick brick : bricks) {
@@ -462,12 +455,10 @@ public class Arkanoid extends JFrame implements KeyListener {
 		} finally {
 			g.dispose();
 		}
-
-				
+		
 		bf.show();
 
 		Toolkit.getDefaultToolkit().sync();
-
 	}
 
 	@Override
