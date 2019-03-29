@@ -45,10 +45,19 @@ public class Arkanoid extends JFrame implements KeyListener {
 	public static final double FT_STEP = 1.0;
 
 	public static final String FONT = "Conthrax sb";
-	public static final String SONIDOMUERTE = "C:\\temp\\Arkanoid\\sonidomuerte.mp3";
+	
+	public static final String SONIDOMUERTE = ".\\bin\\Arkanoid\\Items\\sonidomuerte.mp3";
+	
 	public static final String BACKGROUND = "\\Items\\imagen 3.png";
+	public static final String ICONO = "\\Items\\icono.png";
+	
 	public static final String PALETA = "\\Items\\paleta.png";
 	public static final String BOLA = "\\Items\\bola.png";
+	
+	public static final String BLOQUEVERDE = "\\Items\\bloqueverde.png";
+	public static final String BLOQUEROJO = "\\Items\\bloquerojo.png";
+	public static final String BLOQUEAMARILLO = "\\Items\\bloqueamarillo.png";
+	public static final String BLOQUEAZUL = "\\Items\\bloqueazul.png";
 
 	/* VARIABLES DEL JUEGO */
 
@@ -93,7 +102,6 @@ public class Arkanoid extends JFrame implements KeyListener {
 		void die() {
 
 			reproducirSonido sonido = new reproducirSonido();
-
 			try {
 				sonido.AbrirFichero(SONIDOMUERTE);
 				sonido.Play();
@@ -102,7 +110,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 			}
 
 			lives--;
-			
+
 			if (lives == 0) {
 				gameOver = true;
 				text = "¡Has perdido!" + SL  + "Puntuacion: " + score
@@ -206,8 +214,32 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void draw(Graphics g) {
-			g.setColor(Color.YELLOW);
-			g.fillRect((int) left(), (int) top(), (int) sizeX, (int) sizeY);
+
+			ImageIcon bloque_verde = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEVERDE)).getImage());			
+			ImageIcon bloque_azul = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEAZUL)).getImage());
+			ImageIcon bloque_rojo = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEROJO)).getImage());	
+			ImageIcon bloque_amarillo = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEAMARILLO)).getImage());	
+
+			
+			if(y == 76) {
+				g.setColor(Color.BLUE);
+				g.drawImage(bloque_azul.getImage(), (int) left(), (int) top(), (int) sizeX, (int) sizeY, null);
+			}
+			else if(y == 99) {
+				g.setColor(Color.RED);
+				g.drawImage(bloque_rojo.getImage(), (int) left(), (int) top(), (int) sizeX, (int) sizeY, null);
+			}
+			else if(y == 122) {
+				g.setColor(Color.GREEN);
+				g.drawImage(bloque_verde.getImage(), (int) left(), (int) top(), (int) sizeX, (int) sizeY, null);
+			}
+			else {			
+				g.setColor(Color.YELLOW);
+				g.drawImage(bloque_amarillo.getImage(), (int) left(), (int) top(), (int) sizeX, (int) sizeY, null);
+			}
+
+			//g.fillRect((int) left(), (int) top(), (int) sizeX, (int) sizeY);
+			
 		}
 	}
 
@@ -224,7 +256,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void draw(Graphics g) {
-			
+
 			ImageIcon bola = new ImageIcon(new ImageIcon(getClass().getResource(BOLA)).getImage());			
 
 			g.drawImage(bola.getImage(), (int) left(), (int) top(), (int) radius * 2,(int) radius * 2, null);
@@ -325,15 +357,15 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 	public Arkanoid() {
 
-		ImageIcon bola = new ImageIcon(new ImageIcon(getClass().getResource(BOLA)).getImage());
-		
+		ImageIcon icono = new ImageIcon(new ImageIcon(getClass().getResource(ICONO)).getImage());
+
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setUndecorated(false);
 		this.setResizable(false);
 		this.setSize(ANCHURA_PANTALLA, ALTURA_PANTALLA);
 		this.setVisible(true);
 		this.addKeyListener(this);
-		this.setIconImage(bola.getImage()); //ESTEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE CAMBIA EL ICONO
+		this.setIconImage(icono.getImage());
 		this.setLocationRelativeTo(null);
 
 		this.createBufferStrategy(2);
@@ -342,7 +374,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 	}
 
 	void run() {
-		
+
 		BufferStrategy bf = this.getBufferStrategy();
 		Graphics g = bf.getDrawGraphics();
 		g.setColor(Color.black);
@@ -408,7 +440,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 			}
 
 		}
-		
+
 		this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 
 	}
@@ -437,7 +469,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 	private void drawScene(Ball ball, List<Brick> bricks, ScoreBoard scoreboard) {
 		// Code for the drawing goes here.
-
+		
 		ImageIcon fondo = new ImageIcon(new ImageIcon(getClass().getResource(BACKGROUND)).getImage());
 
 		BufferStrategy bf = this.getBufferStrategy();
@@ -458,7 +490,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 		} finally {
 			g.dispose();
 		}
-		
+
 		bf.show();
 
 		Toolkit.getDefaultToolkit().sync();
