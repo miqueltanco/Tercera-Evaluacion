@@ -23,37 +23,42 @@ public class Arkanoid extends JFrame implements KeyListener {
 	private static final long serialVersionUID = 1L;
 	private static final String SL = System.getProperty("line.separator");
 
-	public static final int ANCHURA_PANTALLA = 800;
-	public static final int ALTURA_PANTALLA = 800;
+	// TAMAÑOS ORIGINALES (POR SI SE HACEN PRUEBAS)
 
-	public static final double RADIO_BOLA = 10.0;
-	public static final double VELOCIDAD_BOLA = 0.4;
+	public static final int ANCHURA_PANTALLA = 800; //800
+	public static final int ALTURA_PANTALLA = 800; //800
 
-	public static final double ANCHURA_PALETA = 60.0;
-	public static final double ALTURA_PALETA = 20.0;
-	public static final double VELOCIDAD_PALETA = 0.6;
+	public static final double RADIO_BOLA = 10.0; //10.0
+	public static double VELOCIDAD_BOLA = 0.4; //0.4
 
-	public static final double ANCHURA_BLOQUE = 60.0;
-	public static final double ALTURA_BLOQUE = 20.0;
+	public static final double ANCHURA_PALETA = 60.0; //60.0
+	public static final double ALTURA_PALETA = 20.0; //20.0
+	public static final double VELOCIDAD_PALETA = 0.6; //0.6
 
-	public static final int CANTIDAD_BLOQUES_X = 11;
-	public static final int CANTIDAD_BLOQUES_Y = 4;
+	public static final double ANCHURA_BLOQUE = 60.0; //60.0
+	public static final double ALTURA_BLOQUE = 20.0; //20.0
 
-	public static final int VIDAS_JUGADOR = 5;
+	public static final int CANTIDAD_BLOQUES_X = 2; //11
+	public static final int CANTIDAD_BLOQUES_Y = 1; //4
 
-	public static final double FT_SLICE = 1.0;
-	public static final double FT_STEP = 1.0;
+	public static final int VIDAS_JUGADOR = 5; //5
+
+	public static final double FT_SLICE = 1.0; //1.0
+	public static final double FT_STEP = 1.0; //1.0
+
+	public static int nivel = 0;
 
 	public static final String FONT = "Conthrax sb";
-	
+
 	public static final String SONIDOMUERTE = ".\\bin\\Arkanoid\\Items\\sonidomuerte.mp3";
-	
+	public static final String VICTORIA = ".\\bin\\Arkanoid\\Items\\victoria.mp3";
+
 	public static final String BACKGROUND = "\\Items\\imagen 3.png";
 	public static final String ICONO = "\\Items\\icono.png";
-	
+
 	public static final String PALETA = "\\Items\\paleta.png";
 	public static final String BOLA = "\\Items\\bola.png";
-	
+
 	public static final String BLOQUEVERDE = "\\Items\\bloqueverde.png";
 	public static final String BLOQUEROJO = "\\Items\\bloquerojo.png";
 	public static final String BLOQUEAMARILLO = "\\Items\\bloqueamarillo.png";
@@ -76,6 +81,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 	class ScoreBoard {
 
 		int score = 0;
+		int score_lvl1 = 0;
 		int lives = VIDAS_JUGADOR;
 		boolean win = false;
 		boolean gameOver = false;
@@ -89,10 +95,24 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void increaseScore() {
+
 			score++;
-			if (score == (CANTIDAD_BLOQUES_X * CANTIDAD_BLOQUES_Y)) {
+
+			System.out.println(bricks.size());
+
+			if (bricks.size() == 1) {
+
+				reproducirSonido sonido = new reproducirSonido();
+
+				try {
+					//sonido.AbrirFichero(VICTORIA);
+					//sonido.Play();
+				} catch (Exception e) {
+					System.out.println(" ");
+				}
+
 				win = true;
-				text = "¡Has ganado!" + SL  + "Puntuacion: " + score
+				text = "¡Has ganado!" + SL  + "Puntuacion: " + (score+score_lvl1)
 						+ SL + SL +"Apreta Enter" + SL + "para reiniciar";
 			} else {
 				updateScoreboard();
@@ -102,6 +122,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 		void die() {
 
 			reproducirSonido sonido = new reproducirSonido();
+
 			try {
 				sonido.AbrirFichero(SONIDOMUERTE);
 				sonido.Play();
@@ -113,7 +134,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 			if (lives == 0) {
 				gameOver = true;
-				text = "¡Has perdido!" + SL  + "Puntuacion: " + score
+				text = "¡Has perdido!" + SL  + "Puntuacion: " + (score+score_lvl1)
 						+ SL + SL +"Apreta Enter" + SL + "para reiniciar";
 			} else {
 				updateScoreboard();
@@ -121,6 +142,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void paused() {
+
 			if (paused) {
 				text = "Pausa";
 			} else {
@@ -220,7 +242,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 			ImageIcon bloque_rojo = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEROJO)).getImage());	
 			ImageIcon bloque_amarillo = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEAMARILLO)).getImage());	
 
-			
+
 			if(y == 76) {
 				g.setColor(Color.BLUE);
 				g.drawImage(bloque_azul.getImage(), (int) left(), (int) top(), (int) sizeX, (int) sizeY, null);
@@ -239,7 +261,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 			}
 
 			//g.fillRect((int) left(), (int) top(), (int) sizeX, (int) sizeY);
-			
+
 		}
 	}
 
@@ -469,7 +491,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 	private void drawScene(Ball ball, List<Brick> bricks, ScoreBoard scoreboard) {
 		// Code for the drawing goes here.
-		
+
 		ImageIcon fondo = new ImageIcon(new ImageIcon(getClass().getResource(BACKGROUND)).getImage());
 
 		BufferStrategy bf = this.getBufferStrategy();
@@ -543,5 +565,4 @@ public class Arkanoid extends JFrame implements KeyListener {
 		new Arkanoid().run();
 
 	}
-
 }
