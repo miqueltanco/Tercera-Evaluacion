@@ -28,7 +28,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 	public static final int ANCHURA_PANTALLA = 800; //800
 	public static final int ALTURA_PANTALLA = 800; //800
 
-	public static final double RADIO_BOLA = 90.0; //10.0
+	public static final double RADIO_BOLA = 10.0; //10.0
 	public static double VELOCIDAD_BOLA = 0.4; //0.4
 
 	public static final double ANCHURA_PALETA = 60.0; //60.0
@@ -46,11 +46,12 @@ public class Arkanoid extends JFrame implements KeyListener {
 	public static final double FT_SLICE = 1.0; //1.0
 	public static final double FT_STEP = 1.0; //1.0
 
-	public static int nivel = 2;
+	public static int nivel = 0;
 
 	public static final String FONT = "Conthrax sb";
 
 	public static final String SONIDOMUERTE = ".\\bin\\Arkanoid\\Items\\sonidomuerte.mp3";
+	public static final String VICTORIA = ".\\bin\\Arkanoid\\Items\\victoria.mp3";
 
 	public static final String BACKGROUND = "\\Items\\imagen 3.png";
 	public static final String ICONO = "\\Items\\icono.png";
@@ -95,35 +96,33 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 		void increaseScore() {
 
-			if(nivel == 0) {
-				score++;
+			score++;
+			
+			System.out.println(" ");
+			
+			if (bricks.size() == 1) {
 
-				if (score == (CANTIDAD_BLOQUES_X * CANTIDAD_BLOQUES_Y)) {
-					
-					nivel = 1;
-					
-				} else {
-					updateScoreboard();
+				reproducirSonido sonido = new reproducirSonido();
+
+				try {
+					sonido.AbrirFichero(VICTORIA);
+					sonido.Play();
+				} catch (Exception e) {
+					System.out.println(" ");
 				}
 
-			} else if(nivel == 2) {
-				
-				score_lvl1++;
-
-				if (score_lvl1 == (CANTIDAD_BLOQUES_X * CANTIDAD_BLOQUES_Y)) {
-					win = true;
-					text = "¡Has ganado!" + SL  + "Puntuacion: " + (score+score_lvl1)
-							+ SL + SL +"Apreta Enter" + SL + "para reiniciar";
-				} else {
-					updateScoreboard();
-				}
-
+				win = true;
+				text = "¡Has ganado!" + SL  + "Puntuacion: " + (score+score_lvl1)
+						+ SL + SL +"Apreta Enter" + SL + "para reiniciar";
+			} else {
+				updateScoreboard();
 			}
 		}
 
 		void die() {
 
 			reproducirSonido sonido = new reproducirSonido();
+
 			try {
 				sonido.AbrirFichero(SONIDOMUERTE);
 				sonido.Play();
@@ -143,6 +142,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void paused() {
+
 			if (paused) {
 				text = "Pausa";
 			} else {
@@ -565,5 +565,4 @@ public class Arkanoid extends JFrame implements KeyListener {
 		new Arkanoid().run();
 
 	}
-
 }
