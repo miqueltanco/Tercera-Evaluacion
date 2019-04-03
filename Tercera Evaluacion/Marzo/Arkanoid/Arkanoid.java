@@ -98,8 +98,6 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 			score++;
 
-			System.out.println(bricks.size());
-
 			if (bricks.size() == 1) {
 
 				reproducirSonido sonido = new reproducirSonido();
