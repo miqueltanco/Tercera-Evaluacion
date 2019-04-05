@@ -10,7 +10,7 @@ class Rectangle extends GameObject {
 			return x - sizeX / 2.0;
 		}
 
-		double right() {
+		double right() {		
 			return x + sizeX / 2.0;
 		}
 
