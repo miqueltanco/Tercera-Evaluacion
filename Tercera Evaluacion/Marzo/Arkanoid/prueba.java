@@ -7,14 +7,12 @@ public class prueba {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		Random rd = new Random();
+		int x = -39;
 		
-		double x = 0;
+		if(x > -40 && x < -20)
+			System.out.println("Hola");
 		
-		for(int i = 0; i < 100; i++) {
-			System.out.print(x + " , ");
-			x = rd.nextDouble();
-		}
+		
 	}
 
 }
