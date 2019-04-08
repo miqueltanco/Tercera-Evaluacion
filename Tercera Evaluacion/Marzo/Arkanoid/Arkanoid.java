@@ -28,12 +28,12 @@ public class Arkanoid extends JFrame implements KeyListener {
 	public static final int ANCHURA_PANTALLA = 800; //800
 	public static final int ALTURA_PANTALLA = 800; //800
 
-	public static final double RADIO_BOLA = 10.0; //10.0
+	public static final double RADIO_BOLA = 100.0; //10.0
 	public static double VELOCIDAD_BOLA = 0.4; //0.4
 
 	public static final double ANCHURA_PALETA = 60.0; //60.0
 	public static final double ALTURA_PALETA = 20.0; //20.0
-	public static final double VELOCIDAD_PALETA = 0.6; //0.6
+	public static double VELOCIDAD_PALETA = 0.6; //0.6
 
 	public static final double ANCHURA_BLOQUE = 60.0; //60.0
 	public static final double ALTURA_BLOQUE = 20.0; //20.0
@@ -46,9 +46,10 @@ public class Arkanoid extends JFrame implements KeyListener {
 	public static final double FT_SLICE = 1.0; //1.0
 	public static final double FT_STEP = 1.0; //1.0
 
-	public static int nivel = 0;
+	public static int nivel = 0; //0
 
 	public static final String FONT = "Conthrax sb";
+	public static final String CORAZON = "\\Items\\corazon.png";
 
 	public static final String SONIDOMUERTE = ".\\bin\\Arkanoid\\Items\\sonidomuerte.mp3";
 	public static final String VICTORIA = ".\\bin\\Arkanoid\\Items\\victoria.mp3";
@@ -88,7 +89,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 		int score = 0;
 		int lives = VIDAS_JUGADOR;
-		boolean win = false;
+		boolean win = false; //false
 		boolean gameOver = false;
 		String text = "";
 
@@ -106,12 +107,12 @@ public class Arkanoid extends JFrame implements KeyListener {
 			if (bricks.size() == 1 && nivel == 0) {
 				nivel = 1;
 				win = true;
-				text = "";
+				text = " ";
 
 			} else if (bricks.size() == 1 && nivel == 1) {
 				nivel = 2;
 				win = true;
-				text = "";
+				text = " ";
 			} else if (bricks.size() == 1 && nivel == 2){
 				nivel = 3;
 			}
@@ -330,10 +331,10 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 			if (top() < 0) {
 				velocityY = VELOCIDAD_BOLA;
-			} else if (bottom() > ALTURA_PANTALLA) {
+			} else if (bottom() > ALTURA_PANTALLA-20) {
 				velocityY = -VELOCIDAD_BOLA;
 				x = paddle.x;
-				y = paddle.y - 50;
+				y = paddle.y - 20;
 				scoreBoard.die();
 			}		
 		}
@@ -429,7 +430,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 
-		// ESTO ESCRIBE CIDE
+		//ESCRIBE CIDE
 		if(nivel == 0) {
 
 			for(int i = 0; i < 3; i++)
@@ -448,6 +449,49 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 			bricks.remove(28);	bricks.remove(29);
 		}
+
+		//ESCRIBE NIT		
+
+		if(nivel == 1) {
+
+			bricks.remove(5);
+			for(int i = 0; i < 5; i++)
+				bricks.remove(6);
+			for(int i = 0; i < 2; i++)
+				bricks.remove(7);
+			for(int i = 0; i < 5; i++)
+				bricks.remove(12);
+			for(int i = 0; i < 3; i++)
+				bricks.remove(13);
+			for(int i = 0; i < 4; i++)
+				bricks.remove(19);
+			for(int i = 0; i < 4; i++)
+				bricks.remove(21);
+			for(int i = 0; i < 4; i++)
+				bricks.remove(27);
+		}
+
+		//ESCRIBRE ART
+
+		if(nivel == 2) {
+
+			bricks.remove(6);
+			for(int i = 0; i < 2; i++)
+				bricks.remove(7);
+			for(int i = 0; i < 5; i++)
+				bricks.remove(12);
+			for(int i = 0; i < 2; i++)
+				bricks.remove(18);
+			for(int i = 0; i < 2; i++)
+				bricks.remove(19);	bricks.remove(21);
+				for(int i = 0; i < 5; i++)
+					bricks.remove(22);
+				for(int i = 0; i < 4; i++)
+					bricks.remove(23);
+				for(int i = 0; i < 4; i++)
+					bricks.remove(29);
+		}
+
 	}
 
 	public Arkanoid() {
@@ -527,7 +571,9 @@ public class Arkanoid extends JFrame implements KeyListener {
 						VELOCIDAD_BOLA = 0.6;
 					else
 						VELOCIDAD_BOLA = 0.5;
+
 					scoreboard.win = false;
+					VELOCIDAD_PALETA = 0.6;
 
 					initializeBricks(bricks);
 					scoreboard.updateScoreboard();
@@ -541,15 +587,15 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 					actualizado = true;
 					CANTIDAD_BLOQUES_X = 11;
-					CANTIDAD_BLOQUES_Y = 6;
+					CANTIDAD_BLOQUES_Y = 5;
 
 					if(dificil)
 						VELOCIDAD_BOLA = 0.8;
 					else
 						VELOCIDAD_BOLA = 0.6;
-					scoreboard.win = false;
 
 					scoreboard.win = false;
+					VELOCIDAD_PALETA = 0.7;
 
 					initializeBricks(bricks);
 					scoreboard.updateScoreboard();
