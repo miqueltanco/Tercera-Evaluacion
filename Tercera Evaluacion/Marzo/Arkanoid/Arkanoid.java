@@ -28,7 +28,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 	public static final int ANCHURA_PANTALLA = 800; //800
 	public static final int ALTURA_PANTALLA = 800; //800
 
-	public static final double RADIO_BOLA = 100.0; //10.0
+	public static final double RADIO_BOLA = 10.0; //10.0
 	public static double VELOCIDAD_BOLA = 0.4; //0.4
 
 	public static final double ANCHURA_PALETA = 60.0; //60.0
@@ -49,7 +49,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 	public static int nivel = 0; //0
 
 	public static final String FONT = "Conthrax sb";
-	public static final String CORAZON = "\\Items\\corazon.png";
+	public static final String CORAZON = "\\Items\\corazonmediano.png";
 
 	public static final String SONIDOMUERTE = ".\\bin\\Arkanoid\\Items\\sonidomuerte.mp3";
 	public static final String VICTORIA = ".\\bin\\Arkanoid\\Items\\victoria.mp3";
@@ -81,6 +81,8 @@ public class Arkanoid extends JFrame implements KeyListener {
 	private List<Brick> bricks = new ArrayList<Arkanoid.Brick>();
 	private ScoreBoard scoreboard = new ScoreBoard();
 	private reproducirSonido sonidoambiente = new reproducirSonido();
+	private ArrayList<ImageIcon> listaImagenes= new ArrayList<ImageIcon>(); 
+	ImageIcon corazon = new ImageIcon(new ImageIcon(getClass().getResource(CORAZON)).getImage());
 
 	private double lastFt;
 	private double currentSlice;
@@ -159,6 +161,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 						+ SL + SL +"Apreta Enter" + SL + "para reiniciar";
 			} else {
 				updateScoreboard();
+				listaImagenes.remove(0);
 			}
 		}
 
@@ -172,7 +175,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void updateScoreboard() {
-			text = "Puntuación: " + score + "  Vidas: " + lives;
+			text = "Puntuación: " + score + "  Vidas: ";
 		}
 
 		void draw(Graphics g) {
@@ -196,8 +199,11 @@ public class Arkanoid extends JFrame implements KeyListener {
 				g.setFont(font);
 				int titleLen = fontMetrics.stringWidth(text);
 				int titleHeight = fontMetrics.getHeight();
-				g.drawString(text, (ANCHURA_PANTALLA / 2) - (titleLen / 2),
-						titleHeight + 15);
+				g.drawString(text, (ANCHURA_PANTALLA / 2) - (titleLen / 2), titleHeight + 15);
+				
+				if(!text.contains("Bienvenido a Arkanoid - CIDE"))
+					for(int i = 0; i < listaImagenes.size();i++)
+					listaImagenes.get(i).paintIcon(null, g,(ANCHURA_PANTALLA / 2) - (titleLen/2)+titleLen+(i*20), titleHeight-17);
 			}
 		}
 	}
@@ -514,6 +520,9 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 	void run() {
 
+		for(int i = 0; i < 5; i++)
+			listaImagenes.add(corazon);
+		
 		BufferStrategy bf = this.getBufferStrategy();
 		Graphics g = bf.getDrawGraphics();
 		g.setColor(Color.black);
@@ -617,6 +626,8 @@ public class Arkanoid extends JFrame implements KeyListener {
 					VELOCIDAD_BOLA = 0.4;
 					CANTIDAD_BLOQUES_X = 11;
 					CANTIDAD_BLOQUES_Y = 5;
+					for(int i = 0; i < 4; i++)
+						listaImagenes.add(corazon);
 
 					initializeBricks(bricks);
 					scoreboard.lives = VIDAS_JUGADOR;

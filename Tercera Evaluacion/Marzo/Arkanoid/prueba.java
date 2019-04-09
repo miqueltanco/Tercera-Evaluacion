@@ -1,7 +1,10 @@
 package Arkanoid;  
 
 import java.awt.event.ActionEvent; 
-import java.awt.event.ActionListener; 
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
 import javax.swing.JButton; 
 import javax.swing.JFrame; 
 import javax.swing.JLabel; 
@@ -49,8 +52,17 @@ public class prueba extends JFrame implements ActionListener {
 	
 	@Override 
 	public void actionPerformed (ActionEvent e) { 
+		
+		String CORAZON = "\\Items\\corazon.png";
+		
+		ImageIcon corazon = new ImageIcon(new ImageIcon(getClass().getResource(CORAZON)).getImage());	
+		
+		ArrayList<ImageIcon> listaImagenes= new ArrayList<ImageIcon>(); 
+		
+		listaImagenes.add(corazon);
+		
 		String nom = caixa.  getText ();  // obtenim el contingut de la caixa de text 
-		JOptionPane.  showMessageDialog (this, "Hola " + nom + ".");  // mostrem un missatge (frame, missatge) 
+		JOptionPane.  showMessageDialog (this, "Hola " + listaImagenes.get(0));  // mostrem un missatge (frame, missatge) 
 	} 
 
 	public static void main (String [] args) { 
