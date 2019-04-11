@@ -18,8 +18,6 @@ import javax.swing.JFrame;
 
 public class Arkanoid extends JFrame implements KeyListener {
 
-	/* CONSTANTES */
-
 	private static final long serialVersionUID = 1L;
 	private static final String SL = System.getProperty("line.separator");
 
@@ -65,6 +63,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 	public static final String BLOQUEROJO = "\\Items\\bloquerojo.png";
 	public static final String BLOQUEAMARILLO = "\\Items\\bloqueamarillo.png";
 	public static final String BLOQUEAZUL = "\\Items\\bloqueazul.png";
+	public static final String BLOQUENARANJA = "\\Items\\bloquenaranja.png";
 
 	/* VARIABLES DEL JUEGO */
 
@@ -74,7 +73,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 	private boolean paused = false;
 	private boolean dificil = false;
 	private boolean augVelocidad = false;
-
+	private boolean derecha = false;
 
 	private Paddle paddle = new Paddle(ANCHURA_PANTALLA / 2, ALTURA_PANTALLA - 50);
 	private Ball ball = new Ball(ANCHURA_PANTALLA / 2, ALTURA_PANTALLA / 2);
@@ -103,24 +102,24 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void increaseScore() {
-
 			score++;
+
+			/* PARA CAMBIAR DE NIVEL UTILIZAMOS ESTAS CONDICIONES */
 
 			if (bricks.size() == 1 && nivel == 0) {
 				nivel = 1;
 				win = true;
-				text = " ";
-
 			} else if (bricks.size() == 1 && nivel == 1) {
 				nivel = 2;
+				actualizado = false;
 				win = true;
-				text = " ";
 			} else if (bricks.size() == 1 && nivel == 2){
 				nivel = 3;
 			}
 
-			if (bricks.size() == 1 && nivel == 3) {
+			/* COMO EL NIVEL 3 ES EL ULTIMO NIVEL, SALTARÁ UN SONIDO DE VICTORIA */
 
+			if (bricks.size() == 1 && nivel == 3) {
 				reproducirSonido sonido = new reproducirSonido();
 
 				try {
@@ -136,17 +135,19 @@ public class Arkanoid extends JFrame implements KeyListener {
 					e.printStackTrace();
 				}
 
+				gameOver = true;
 				win = true;
 				text = "¡Has ganado!" + SL  + "Puntuacion: " + (score)
 						+ SL + SL +"Apreta Enter" + SL + "para reiniciar";
+
 			} else {
 				updateScoreboard();
 			}
 		}
 
 		void die() {
-
 			lives--;
+			listaImagenes.remove(0);
 
 			if (lives == 0) {
 				gameOver = true;
@@ -159,9 +160,9 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 				text = "¡Has perdido!" + SL  + "Puntuacion: " + (score)
 						+ SL + SL +"Apreta Enter" + SL + "para reiniciar";
+
 			} else {
 				updateScoreboard();
-				listaImagenes.remove(0);
 			}
 		}
 
@@ -176,6 +177,11 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 		void updateScoreboard() {
 			text = "Puntuación: " + score + "  Vidas: ";
+
+			if(nivel == 1 && win)
+				text = "NIVEL 1";
+			if(nivel == 2 && win)
+				text = "NIVEL 2";			
 		}
 
 		void draw(Graphics g) {
@@ -200,10 +206,10 @@ public class Arkanoid extends JFrame implements KeyListener {
 				int titleLen = fontMetrics.stringWidth(text);
 				int titleHeight = fontMetrics.getHeight();
 				g.drawString(text, (ANCHURA_PANTALLA / 2) - (titleLen / 2), titleHeight + 15);
-				
+
 				if(!text.contains("Bienvenido a Arkanoid - CIDE"))
 					for(int i = 0; i < listaImagenes.size();i++)
-					listaImagenes.get(i).paintIcon(null, g,(ANCHURA_PANTALLA / 2) - (titleLen/2)+titleLen+(i*20), titleHeight-17);
+						listaImagenes.get(i).paintIcon(null, g,(ANCHURA_PANTALLA / 2) - (titleLen/2)+titleLen+(i*20), titleHeight-17);
 			}
 		}
 	}
@@ -220,8 +226,9 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void update() {
-
 			x += velocity * FT_STEP;
+
+			/* CON ESTO NO SE SALE DEL MAPA */
 
 			if(x > 764) {
 				x = 764.2;
@@ -253,7 +260,6 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void draw(Graphics g) {
-
 			ImageIcon paleta = new ImageIcon(new ImageIcon(getClass().getResource(PALETA)).getImage());			
 
 			g.drawImage(paleta.getImage(), (int) (left()), (int) (top()), (int) sizeX, (int) sizeY, null);
@@ -272,11 +278,11 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void draw(Graphics g) {
-
 			ImageIcon bloque_verde = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEVERDE)).getImage());			
 			ImageIcon bloque_azul = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEAZUL)).getImage());
 			ImageIcon bloque_rojo = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEROJO)).getImage());	
-			ImageIcon bloque_amarillo = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEAMARILLO)).getImage());	
+			ImageIcon bloque_amarillo = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEAMARILLO)).getImage());
+			ImageIcon bloque_naranja = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUENARANJA)).getImage());
 
 
 			if(y == 76) {
@@ -291,13 +297,17 @@ public class Arkanoid extends JFrame implements KeyListener {
 				g.setColor(Color.GREEN);
 				g.drawImage(bloque_verde.getImage(), (int) left(), (int) top(), (int) sizeX, (int) sizeY, null);
 			}
-			else {			
+			else if(y == 145) {			
 				g.setColor(Color.YELLOW);
 				g.drawImage(bloque_amarillo.getImage(), (int) left(), (int) top(), (int) sizeX, (int) sizeY, null);
 			}
-
-			//g.fillRect((int) left(), (int) top(), (int) sizeX, (int) sizeY);
-
+			else if(y == 168) {			
+				g.setColor(Color.ORANGE);
+				g.drawImage(bloque_naranja.getImage(), (int) left(), (int) top(), (int) sizeX, (int) sizeY, null);
+			}
+			else {
+				g.setColor(Color.gray);
+			}
 		}
 	}
 
@@ -314,11 +324,9 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void draw(Graphics g) {
-
 			ImageIcon bola = new ImageIcon(new ImageIcon(getClass().getResource(BOLA)).getImage());			
 
 			g.drawImage(bola.getImage(), (int) left(), (int) top(), (int) radius * 2,(int) radius * 2, null);
-			//g.fillOval((int) left(), (int) top(), (int) radius * 2,(int) radius * 2);
 		}
 
 		void update(ScoreBoard scoreBoard, Paddle paddle) {
@@ -326,21 +334,29 @@ public class Arkanoid extends JFrame implements KeyListener {
 			x += velocityX * FT_STEP;
 			y += velocityY * FT_STEP;
 
-			if (left() < 0 && !augVelocidad)
+			if (left() < 0 && !augVelocidad) {
 				velocityX = VELOCIDAD_BOLA;
-			else if (left() < 0 && augVelocidad)
+				derecha = false;
+			}
+			else if (left() < 0 && augVelocidad) {
 				velocityX = VELOCIDAD_BOLA*2;
-			else if (right() > ANCHURA_PANTALLA && !augVelocidad)
+				derecha = false;
+			}
+			else if (right() > ANCHURA_PANTALLA && !augVelocidad) {
 				velocityX = -VELOCIDAD_BOLA;
-			else if (right() > ANCHURA_PANTALLA && augVelocidad)
+				derecha = true;
+			}
+			else if (right() > ANCHURA_PANTALLA && augVelocidad) {
 				velocityX = -VELOCIDAD_BOLA*2;
-
+				derecha = true;
+			}
 			if (top() < 0) {
 				velocityY = VELOCIDAD_BOLA;
-			} else if (bottom() > ALTURA_PANTALLA-20) {
+			} else if (bottom() > ALTURA_PANTALLA-35) {
 				velocityY = -VELOCIDAD_BOLA;
 				x = paddle.x;
 				y = paddle.y - 20;
+
 				scoreBoard.die();
 			}		
 		}
@@ -379,22 +395,38 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 		if(calculo >= -10.0 && calculo <= 10){
 			System.out.println("EN EL CENTRO");
-			mBall.velocityX = -VELOCIDAD_BOLA*0.4;
+			if(derecha)
+				mBall.velocityX = -VELOCIDAD_BOLA*0.4;
+			else
+				mBall.velocityX = VELOCIDAD_BOLA*0.4;
 		} 
 		else if(calculo <= 40.0 && calculo >= 30.0){
 			System.out.println("ESQUINA DERECHA");
-			mBall.velocityX = VELOCIDAD_BOLA*2;
+			if(derecha)
+				mBall.velocityX = -VELOCIDAD_BOLA*2;
+			else
+				mBall.velocityX = VELOCIDAD_BOLA*2;
 			augVelocidad = true;
 		} else if(calculo <= -30.0 && calculo >= -40.0){
 			System.out.println("ESQUINA IZQUIERDA");
-			mBall.velocityX = -VELOCIDAD_BOLA*2;
+			if(derecha)
+				mBall.velocityX = -VELOCIDAD_BOLA*2;
+			else
+				mBall.velocityX = VELOCIDAD_BOLA*2;
 			augVelocidad = true;
 		} else if (calculo <= -11.0 && calculo >= -29.0) {
 			System.out.println("IZQUIERDA MEDIA");
-			mBall.velocityX = VELOCIDAD_BOLA;	}
+			if(derecha)
+				mBall.velocityX = -VELOCIDAD_BOLA;
+			else
+				mBall.velocityX = VELOCIDAD_BOLA;	
+		}
 		else {
 			System.out.println("DERECHA MEDIA");
-			mBall.velocityX = -VELOCIDAD_BOLA;
+			if(derecha)
+				mBall.velocityX = -VELOCIDAD_BOLA;
+			else
+				mBall.velocityX = VELOCIDAD_BOLA;	
 		}
 	}
 
@@ -425,7 +457,9 @@ public class Arkanoid extends JFrame implements KeyListener {
 	}
 
 	void initializeBricks(List<Brick> bricks) {
-		// deallocate old bricks
+
+		/* QUITAMOS LOS BLOQUES ANTIGUOS DE LA LISTA, POR SI ACASO */
+
 		bricks.clear();
 
 		for (int iX = 0; iX < CANTIDAD_BLOQUES_X; ++iX) {
@@ -435,8 +469,8 @@ public class Arkanoid extends JFrame implements KeyListener {
 			}
 		}
 
+		/* ESCRIBE CIDE */
 
-		//ESCRIBE CIDE
 		if(nivel == 0) {
 
 			for(int i = 0; i < 3; i++)
@@ -456,7 +490,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 			bricks.remove(28);	bricks.remove(29);
 		}
 
-		//ESCRIBE NIT		
+		/* ESCRIBE NIT */	
 
 		if(nivel == 1) {
 
@@ -477,7 +511,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 				bricks.remove(27);
 		}
 
-		//ESCRIBRE ART
+		/* ESCRIBE ART */
 
 		if(nivel == 2) {
 
@@ -489,13 +523,16 @@ public class Arkanoid extends JFrame implements KeyListener {
 			for(int i = 0; i < 2; i++)
 				bricks.remove(18);
 			for(int i = 0; i < 2; i++)
-				bricks.remove(19);	bricks.remove(21);
-				for(int i = 0; i < 5; i++)
-					bricks.remove(22);
-				for(int i = 0; i < 4; i++)
-					bricks.remove(23);
-				for(int i = 0; i < 4; i++)
-					bricks.remove(29);
+				bricks.remove(19);	
+
+			bricks.remove(21);
+
+			for(int i = 0; i < 5; i++)
+				bricks.remove(22);
+			for(int i = 0; i < 4; i++)
+				bricks.remove(23);
+			for(int i = 0; i < 4; i++)
+				bricks.remove(29);
 		}
 
 	}
@@ -520,9 +557,9 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 	void run() {
 
-		for(int i = 0; i < 5; i++)
+		for(int i = 0; i < VIDAS_JUGADOR; i++)
 			listaImagenes.add(corazon);
-		
+
 		BufferStrategy bf = this.getBufferStrategy();
 		Graphics g = bf.getDrawGraphics();
 		g.setColor(Color.black);
@@ -540,13 +577,19 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 		while (running) {
 
+			/* PAUSA ENTRE NIVEL 0 Y NIVEL 1 */
+
 			if(nivel == 1 && actualizado == false) {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
-			} else if(nivel == 2 && actualizado == false) {
+			} 
+
+			/* PAUSA ENTRE NIVEL 1 Y NIVEL 2 */
+
+			if(nivel == 2 && actualizado == false) {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e1) {
@@ -568,93 +611,100 @@ public class Arkanoid extends JFrame implements KeyListener {
 					e.printStackTrace();
 				}
 
-			} else {
+			} else if(nivel == 1) {
 
-				if(nivel == 1) {
+				actualizado = true;
+				CANTIDAD_BLOQUES_X = 11;
+				CANTIDAD_BLOQUES_Y = 5;
 
-					actualizado = true;
-					CANTIDAD_BLOQUES_X = 11;
-					CANTIDAD_BLOQUES_Y = 5;
+				if(dificil)
+					VELOCIDAD_BOLA = 0.6;
+				else
+					VELOCIDAD_BOLA = 0.5;
 
-					if(dificil)
-						VELOCIDAD_BOLA = 0.6;
-					else
-						VELOCIDAD_BOLA = 0.5;
+				scoreboard.win = false;
+				VELOCIDAD_PALETA = 0.6;
 
-					scoreboard.win = false;
-					VELOCIDAD_PALETA = 0.6;
+				initializeBricks(bricks);
+				scoreboard.updateScoreboard();
 
-					initializeBricks(bricks);
-					scoreboard.updateScoreboard();
+				ball.x = ANCHURA_PANTALLA / 2;
+				ball.y = ALTURA_PANTALLA / 2;
+				paddle.x = ANCHURA_PANTALLA / 2;
 
-					ball.x = ANCHURA_PANTALLA / 2;
-					ball.y = ALTURA_PANTALLA / 2;
-					paddle.x = ANCHURA_PANTALLA / 2;
+				/* INICIAMOS EL NIVEL 2 */
 
+			} else if(nivel == 2) {
 
-				} else if(nivel == 2) {
+				actualizado = true;
+				CANTIDAD_BLOQUES_X = 11;
+				CANTIDAD_BLOQUES_Y = 5;
 
-					actualizado = true;
-					CANTIDAD_BLOQUES_X = 11;
-					CANTIDAD_BLOQUES_Y = 5;
+				if(dificil)
+					VELOCIDAD_BOLA = 0.8;
+				else
+					VELOCIDAD_BOLA = 0.6;
 
-					if(dificil)
-						VELOCIDAD_BOLA = 0.8;
-					else
-						VELOCIDAD_BOLA = 0.6;
+				scoreboard.win = false;
+				VELOCIDAD_PALETA = 0.7;
 
-					scoreboard.win = false;
-					VELOCIDAD_PALETA = 0.7;
+				initializeBricks(bricks);
+				scoreboard.updateScoreboard();
 
-					initializeBricks(bricks);
-					scoreboard.updateScoreboard();
+				ball.x = ANCHURA_PANTALLA / 2;
+				ball.y = ALTURA_PANTALLA / 2;
+				paddle.x = ANCHURA_PANTALLA / 2;
 
-					ball.x = ANCHURA_PANTALLA / 2;
-					ball.y = ALTURA_PANTALLA / 2;
-					paddle.x = ANCHURA_PANTALLA / 2;
+				/* SI SE QUIERE VOLVER A EMPEZAR EL JUEGO */
 
+			}
 
-				} else if (tryAgain) {
+			if (tryAgain) {
 
-					try {
-						sonidoambiente.Play();
-					} catch (Exception e) {
-						System.out.println("Ha fallado");
-					}
-
-					nivel = 0;
-					VELOCIDAD_BOLA = 0.4;
-					CANTIDAD_BLOQUES_X = 11;
-					CANTIDAD_BLOQUES_Y = 5;
-					for(int i = 0; i < 4; i++)
-						listaImagenes.add(corazon);
-
-					initializeBricks(bricks);
-					scoreboard.lives = VIDAS_JUGADOR;
-					scoreboard.score = 0;
-					scoreboard.win = false;
-					scoreboard.gameOver = false;
-
-					scoreboard.updateScoreboard();
-
-					ball.x = ANCHURA_PANTALLA / 2;
-					ball.y = ALTURA_PANTALLA / 2;
-					paddle.x = ANCHURA_PANTALLA / 2;
-
-					tryAgain = false;
-					actualizado = false;
-
+				try {
+					sonidoambiente.Play();
+				} catch (Exception e) {
+					System.out.println("Ha fallado");
 				}
-				else if(paused && !scoreboard.gameOver){
-					scoreboard.paused();
-					drawScene(ball, bricks, scoreboard);
 
-					if(!paused) {
-						scoreboard.updateScoreboard();
-					}
+				nivel = 0;
+				VELOCIDAD_BOLA = 0.4;
+				CANTIDAD_BLOQUES_X = 11;
+				CANTIDAD_BLOQUES_Y = 5;
 
+				listaImagenes.clear();
+
+				for(int i = 0; i < VIDAS_JUGADOR; i++)
+					listaImagenes.add(corazon);
+
+				initializeBricks(bricks);
+				scoreboard.lives = VIDAS_JUGADOR;
+
+				if(!scoreboard.win)
+					scoreboard.score = 0;
+				scoreboard.win = false;
+				scoreboard.gameOver = false;
+
+				scoreboard.updateScoreboard();
+
+				ball.x = ANCHURA_PANTALLA / 2;
+				ball.y = ALTURA_PANTALLA / 2;
+				paddle.x = ANCHURA_PANTALLA / 2;
+
+				tryAgain = false;
+				actualizado = false;
+
+			}
+			else if(paused && !scoreboard.gameOver){
+				scoreboard.paused();
+				drawScene(ball, bricks, scoreboard);
+
+				if(!paused) {
+					scoreboard.updateScoreboard();
 				}
 			}
+
+
 			long time2 = System.currentTimeMillis();
 			double elapsedTime = time2 - time1;
 
@@ -665,7 +715,6 @@ public class Arkanoid extends JFrame implements KeyListener {
 				double fps = 1.0 / seconds;
 				this.setTitle("FPS: " + (int)fps);
 			}
-
 		}
 
 		this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
@@ -691,15 +740,12 @@ public class Arkanoid extends JFrame implements KeyListener {
 					augVelocidad = false;
 				}
 			}
-
 		}
-
-
-
 	}
 
 	private void drawScene(Ball ball, List<Brick> bricks, ScoreBoard scoreboard) {
-		// Code for the drawing goes here.
+
+		/* EN ESTE METODO SE DIBUJA LA ESCENA */
 
 		ImageIcon fondo = new ImageIcon(new ImageIcon(getClass().getResource(BACKGROUND)).getImage());
 
@@ -732,9 +778,6 @@ public class Arkanoid extends JFrame implements KeyListener {
 		if (event.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			running = false;
 		}
-		if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-			tryAgain = true;
-		}
 		switch (event.getKeyCode()) {
 		case KeyEvent.VK_LEFT:
 			paddle.moveLeft();
@@ -747,6 +790,10 @@ public class Arkanoid extends JFrame implements KeyListener {
 				paused = !paused;
 			}
 			break;
+		case KeyEvent.VK_ENTER:
+			if(scoreboard.gameOver) {
+				tryAgain = true;
+			}			
 		default:
 			break;
 		}
