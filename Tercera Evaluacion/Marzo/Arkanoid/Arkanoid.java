@@ -307,6 +307,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 			}
 			else {
 				g.setColor(Color.gray);
+				g.fillRect((int) left(), (int) top(), (int) sizeX, (int) sizeY);
 			}
 		}
 	}
@@ -468,7 +469,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 						(iY + 2) * (ALTURA_BLOQUE + 3) + 30));
 			}
 		}
-
+		
 		/* ESCRIBE CIDE */
 
 		if(nivel == 0) {
@@ -535,6 +536,12 @@ public class Arkanoid extends JFrame implements KeyListener {
 				bricks.remove(29);
 		}
 
+		/* AÑADIMOS LOS BLOQUES INMORTALES */
+		
+		if(nivel == 1) {
+			bricks.add(new Brick(200,250));
+			}
+		
 	}
 
 	public Arkanoid() {
@@ -576,7 +583,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		while (running) {
-
+			
 			/* PAUSA ENTRE NIVEL 0 Y NIVEL 1 */
 
 			if(nivel == 1 && actualizado == false) {
