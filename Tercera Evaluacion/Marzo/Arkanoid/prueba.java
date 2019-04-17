@@ -62,7 +62,7 @@ public class prueba extends JFrame implements ActionListener {
 		listaImagenes.add(corazon);
 		
 		String nom = caixa.  getText ();  // obtenim el contingut de la caixa de text 
-		JOptionPane.  showMessageDialog (this, "Hola " + listaImagenes.get(0));  // mostrem un missatge (frame, missatge) 
+		JOptionPane.  showMessageDialog (this, "Hola " + nom);  // mostrem un missatge (frame, missatge) 
 	} 
 
 	public static void main (String [] args) { 
