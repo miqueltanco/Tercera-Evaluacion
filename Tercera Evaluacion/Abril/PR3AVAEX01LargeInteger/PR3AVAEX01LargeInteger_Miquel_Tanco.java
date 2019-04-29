@@ -72,9 +72,9 @@ public class PR3AVAEX01LargeInteger_Miquel_Tanco {
 
 	/* METODO SUMA */
 
-	public PR3AVAEX01LargeInteger_Miquel_Tanco add(PR3AVAEX01LargeInteger_Miquel_Tanco x) {
+	public static PR3AVAEX01LargeInteger_Miquel_Tanco add(PR3AVAEX01LargeInteger_Miquel_Tanco x, PR3AVAEX01LargeInteger_Miquel_Tanco y) {
 
-		int length = tamany();
+		int length = y.tamany();
 		int suma;
 		int llevamos = 0; //cuando una suma es mayor o igual a 10, se sumará uno en el siguiente numero
 
@@ -82,14 +82,14 @@ public class PR3AVAEX01LargeInteger_Miquel_Tanco {
 
 		if(x.tamany() > length)
 			length = x.tamany();
-		checkLength(length);
+		y.checkLength(length);
 		x.checkLength(length);
 
 		PR3AVAEX01LargeInteger_Miquel_Tanco resultado = new PR3AVAEX01LargeInteger_Miquel_Tanco(length + 1);
 
 		for(int i = length; i >= 0; i--) {
 
-			suma = numeroArray[i] + x.numeroArray[i] + llevamos;
+			suma = y.numeroArray[i] + x.numeroArray[i] + llevamos;
 
 			if(suma > 10) {
 				llevamos = 1;
@@ -106,23 +106,23 @@ public class PR3AVAEX01LargeInteger_Miquel_Tanco {
 
 	/* METODO RESTA, FRACASO TOTAL */
 
-	public PR3AVAEX01LargeInteger_Miquel_Tanco subtract(PR3AVAEX01LargeInteger_Miquel_Tanco x) {
+	public static PR3AVAEX01LargeInteger_Miquel_Tanco subtract(PR3AVAEX01LargeInteger_Miquel_Tanco x, PR3AVAEX01LargeInteger_Miquel_Tanco y) {
 
-		int length = tamany();
+		int length = y.tamany();
 		int resta;
 
 		/* ESTO ES LO QUE HE COPIADO DE INTERNET */
 
 		if(x.tamany() > length)
 			length = x.tamany();
-		checkLength(length);
+		y.checkLength(length);
 		x.checkLength(length);
 
 		PR3AVAEX01LargeInteger_Miquel_Tanco resultado = new PR3AVAEX01LargeInteger_Miquel_Tanco(length + 1);
 
 		for(int i = length; i >= 0; i--) {
 
-			resta = numeroArray[i] - x.numeroArray[i];
+			resta = y.numeroArray[i] - x.numeroArray[i];
 
 			resultado.numeroArray[i] = resta;
 
@@ -130,11 +130,11 @@ public class PR3AVAEX01LargeInteger_Miquel_Tanco {
 		return resultado;
 	}
 
-	public boolean isEqualTo(PR3AVAEX01LargeInteger_Miquel_Tanco x) {
+	public static boolean isEqualTo(PR3AVAEX01LargeInteger_Miquel_Tanco x, PR3AVAEX01LargeInteger_Miquel_Tanco y) {
 
-		for(int i = 0; i <tamany(); i++)
+		for(int i = 0; i <y.tamany(); i++)
 		{
-			if(numeroArray[i] != x.numeroArray[i])
+			if(y.numeroArray[i] != x.numeroArray[i])
 			{
 				/* SI ALGUN NUMERO NO COINCIDE SALE DIRECTAMENTE DEL METODO, ASI NO ES POSIBLE UN IndexOutOfBoundsException, no te imaginas cuantos de estos me han salido este ejercicio, horrible */
 				return false;
@@ -146,51 +146,51 @@ public class PR3AVAEX01LargeInteger_Miquel_Tanco {
 
 	}
 
-	public boolean isNotEqualTo(PR3AVAEX01LargeInteger_Miquel_Tanco x) {
+	public static boolean isNotEqualTo(PR3AVAEX01LargeInteger_Miquel_Tanco x, PR3AVAEX01LargeInteger_Miquel_Tanco y) {
 		//REUTILIZAMOS METODOS, SI ES TRUE SERÁ FALSE YA QUE USAMOS EL !
-		return !(isEqualTo(x));
+		return !(isEqualTo(x,y));
 	}
 
-	public boolean isGreaterThan(PR3AVAEX01LargeInteger_Miquel_Tanco x) {
+	public static boolean isGreaterThan(PR3AVAEX01LargeInteger_Miquel_Tanco x, PR3AVAEX01LargeInteger_Miquel_Tanco y) {
 
 		int i = 0;
 
-		while( (numeroArray[i] == x.numeroArray[i]) && (i < tamany()-1) ) {
+		while( (y.numeroArray[i] == x.numeroArray[i]) && (i < y.tamany()-1) ) {
 			i++;
 		}
 			/* SI EL NUMERO ES EL MISMO */
-		if(i == tamany()) 
+		if(i == y.tamany()) 
 			return false;
 		else
 			/* RETORNA TRUE SI EL NUMERO A LA IZQUIERDA ES MAS GRANDE */
-			return (numeroArray[i] > x.numeroArray[i]);
+			return (y.numeroArray[i] > x.numeroArray[i]);
 
 	}
 
-	public boolean isLessThan(PR3AVAEX01LargeInteger_Miquel_Tanco x) {
+	public static boolean isLessThan(PR3AVAEX01LargeInteger_Miquel_Tanco x, PR3AVAEX01LargeInteger_Miquel_Tanco y) {
 		int i = 0;
-		while( (numeroArray[i] == x.numeroArray[i]) && (i < tamany()-1) ) {
+		while( (y.numeroArray[i] == x.numeroArray[i]) && (i < y.tamany()-1) ) {
 			i++;
 		}
 			/* SI EL NUMERO ES EL MISMO */
-		if(i ==  tamany()) {
+		if(i ==  y.tamany()) {
 			return false;
 		}
 
 		else {
 			/* RETORNA TRUE SI EL NUMERO A LA IZQUIERDA ES MAS PEQUEÑO */
-			return (numeroArray[i] < x.numeroArray[i]);
+			return (y.numeroArray[i] < x.numeroArray[i]);
 		}
 	}
 
-	public boolean isGreaterThanOrEqualTo(PR3AVAEX01LargeInteger_Miquel_Tanco x) {
+	public static boolean isGreaterThanOrEqualTo(PR3AVAEX01LargeInteger_Miquel_Tanco x, PR3AVAEX01LargeInteger_Miquel_Tanco y) {
 		//REUTILIZAMOS METODOS
-		return (isGreaterThan(x) || isEqualTo(x));
+		return (isGreaterThan(x, y) || isEqualTo(x, y));
 	}
 
-	public boolean isLessThanOrEqualTo(PR3AVAEX01LargeInteger_Miquel_Tanco x) {
+	public static boolean isLessThanOrEqualTo(PR3AVAEX01LargeInteger_Miquel_Tanco x, PR3AVAEX01LargeInteger_Miquel_Tanco y) {
 		//REUTILIZAMOS METODOS
-		return (isLessThan(x) || isEqualTo(x));
+		return (isLessThan(x, y) || isEqualTo(x, y));
 	}
 
 	public boolean isZero() {

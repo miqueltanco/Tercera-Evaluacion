@@ -37,7 +37,5 @@ public class PR3AVAEX01Rational_Miquel_Tanco_TEST {
 		
 		System.out.println("Division: " + resultado);
 		
-		System.out.println(fraccion1);
-		
 	}	
 }
