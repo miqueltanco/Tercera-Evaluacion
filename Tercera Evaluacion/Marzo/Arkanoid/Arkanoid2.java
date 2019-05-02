@@ -7,21 +7,57 @@ import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
-public class Arkanoid extends JFrame implements KeyListener {
+import gnu.io.CommPortIdentifier;
+import gnu.io.SerialPort;
+import gnu.io.SerialPortEvent;
+import gnu.io.SerialPortEventListener;
 
+
+
+
+public class Arkanoid2 extends JFrame implements KeyListener, SerialPortEventListener {
+
+	
+	/* Inicialitzacions serial
+	 * 
+	 */
+	SerialPort serialPort;
+	/** The port we're normally going to use. */
+	private static final String PORT_NAMES[] = {                  
+			//"/dev/tty.usbserial-A9007UX1", // Mac OS X
+			"/dev/cu.usbmodem3a21",
+			"/dev/ttyUSB0", // Linux
+			"COM3", // Windows
+	};
+	protected BufferedReader input;
+	private OutputStream output;
+	private static final int TIME_OUT = 3000;
+	private static final int DATA_RATE = 9600;
+	
+	
+	/* Inicialitzacions serial
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
 	private static final String SL = System.getProperty("line.separator");
 
-	// TAMAÑOS ORIGINALES (POR SI SE HACEN PRUEBAS)
+	// TAMAï¿½OS ORIGINALES (POR SI SE HACEN PRUEBAS)
 
 	public static final int ANCHURA_PANTALLA = 800; //800
 	public static final int ALTURA_PANTALLA = 800; //800
@@ -29,7 +65,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 	public static final double RADIO_BOLA = 10.0; //10.0
 	public static double VELOCIDAD_BOLA = 0.4; //0.4
 
-	public static double ANCHURA_PALETA = 60.0; //60.0
+	public static final double ANCHURA_PALETA = 60.0; //60.0
 	public static final double ALTURA_PALETA = 20.0; //20.0
 	public static double VELOCIDAD_PALETA = 0.6; //0.6
 
@@ -46,42 +82,38 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 	public static int nivel = 0; //0
 
-	/* IMAGENES, SONIDOS Y FUENTE DE LETRA */
-
 	public static final String FONT = "Conthrax sb";
+	public static final String CORAZON = "./Items/corazonmediano.png";
 
-	public static final String CORAZON = "\\Items\\corazonmediano.png";
+	public static final String SONIDOMUERTE = "./Items/sonidomuerte.mp3";
+	public static final String VICTORIA = "./Items/victoria.mp3";
+	public static final String AMBIENTE = "./Items/ambiente.wav";
 
-	public static final String SONIDOMUERTE = ".\\bin\\Arkanoid\\Items\\sonidomuerte.mp3"; //EN DESUSO
-	public static final String VICTORIA = ".\\bin\\Arkanoid\\Items\\victoria.mp3";
-	public static final String AMBIENTE = ".\\bin\\Arkanoid\\Items\\ambiente.wav";
+	public static final String BACKGROUND = "./Items/imagen 3.png";
+	public static final String ICONO = "./Items/icono.png";
 
-	public static final String BACKGROUND = "\\Items\\imagen 3.png";
-	public static final String ICONO = "\\Items\\icono.png";
+	public static final String PALETA = "./Items/paleta.png";
+	public static final String BOLA = "./Items/bola.png";
 
-	public static final String PALETA = "\\Items\\paleta.png";
-	public static final String BOLA = "\\Items\\bola.png";
-
-	public static final String BLOQUEVERDE = "\\Items\\bloqueverde.png";
-	public static final String BLOQUEROJO = "\\Items\\bloquerojo.png";
-	public static final String BLOQUEAMARILLO = "\\Items\\bloqueamarillo.png";
-	public static final String BLOQUEAZUL = "\\Items\\bloqueazul.png";
-	public static final String BLOQUENARANJA = "\\Items\\bloquenaranja.png";
-	public static final String BLOQUEINMORTAL = "\\Items\\bloqueinmortal.png";
+	public static final String BLOQUEVERDE = "./Items/bloqueverde.png";
+	public static final String BLOQUEROJO = "./Items/bloquerojo.png";
+	public static final String BLOQUEAMARILLO = "./Items/bloqueamarillo.png";
+	public static final String BLOQUEAZUL = "./Items/bloqueazul.png";
+	public static final String BLOQUENARANJA = "./Items/bloquenaranja.png";
 
 	/* VARIABLES DEL JUEGO */
 
-	private boolean tryAgain = false; //POR SI QUIERE REINICIAR LA PARTIDA DANDOLE AL ENTER CUANDO SE QUEDA SIN VIDAS
-	private boolean actualizado = false; //BOOLEAN INTERNA PARA CONDICIONES DE CREACION DEL PROXIMO NIVEL
-	private boolean running = false; // BOOLEAN PRINCIPAL, FALSE = SE PARA EL PROGRAMA
-	private boolean paused = false; // PAUSA EL JUEGO
-	private boolean dificil = false; //OPCION PARA MENU POR SI SE QUIERE AÑADIR DIFICULTAD (ACTUALMENTE NO ESTA IMPLEMENTADO)
-	private boolean augVelocidad = false; //CUANDO SE DA CON LA ESQUINA DE LA PALETA AUGMENTA LA VELOCIDAD, SE ACTIVA LA BOOLEAN Y CUANDO LE DA A UN BRICK SE DESACTIVA
-	private boolean derecha = false; //BOOLEAN PARA CONTROLAR LA DIRECCION DE LA BOLA CONTRA LA PALETA
+	private boolean tryAgain = false;
+	private boolean actualizado = false;
+	private boolean running = false;
+	private boolean paused = false;
+	private boolean dificil = false;
+	private boolean augVelocidad = false;
+	private boolean derecha = false;
 
 	private Paddle paddle = new Paddle(ANCHURA_PANTALLA / 2, ALTURA_PANTALLA - 50);
 	private Ball ball = new Ball(ANCHURA_PANTALLA / 2, ALTURA_PANTALLA / 2);
-	private List<Brick> bricks = new ArrayList<Arkanoid.Brick>();
+	private List<Brick> bricks = new ArrayList<Arkanoid2.Brick>();
 	private ScoreBoard scoreboard = new ScoreBoard();
 	private reproducirSonido sonidoambiente = new reproducirSonido();
 	private ArrayList<ImageIcon> listaImagenes= new ArrayList<ImageIcon>(); 
@@ -94,9 +126,10 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 		int score = 0;
 		int lives = VIDAS_JUGADOR;
-		boolean win = false; //false (VALOR PREDETERMINADO)
+		boolean win = false; //false
 		boolean gameOver = false;
 		String text = "";
+
 		Font font;
 
 		ScoreBoard() {
@@ -112,7 +145,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 			if (bricks.size() == 1 && nivel == 0) {
 				nivel = 1;
 				win = true;
-			} else if (bricks.size() == 2 && nivel == 1) {
+			} else if (bricks.size() == 1 && nivel == 1) {
 				nivel = 2;
 				actualizado = false;
 				win = true;
@@ -120,7 +153,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 				nivel = 3;
 			}
 
-			/* COMO EL NIVEL 3 ES EL ULTIMO NIVEL, SALTARÁ UN SONIDO DE VICTORIA Y ACABARÁ LA PARTIDA*/
+			/* COMO EL NIVEL 3 ES EL ULTIMO NIVEL, SALTARï¿½ UN SONIDO DE VICTORIA */
 
 			if (bricks.size() == 1 && nivel == 3) {
 				reproducirSonido sonido = new reproducirSonido();
@@ -140,7 +173,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 				gameOver = true;
 				win = true;
-				text = "¡Has ganado!" + SL  + "Puntuacion: " + (score)
+				text = "ï¿½Has ganado!" + SL  + "Puntuacion: " + (score)
 						+ SL + SL +"Apreta Enter" + SL + "para reiniciar";
 
 			} else {
@@ -161,7 +194,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 					e.printStackTrace();
 				}				
 
-				text = "¡Has perdido!" + SL  + "Puntuacion: " + (score)
+				text = "ï¿½Has perdido!" + SL  + "Puntuacion: " + (score)
 						+ SL + SL +"Apreta Enter" + SL + "para reiniciar";
 
 			} else {
@@ -170,6 +203,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void paused() {
+
 			if (paused) {
 				text = "Pausa";
 			} else {
@@ -178,7 +212,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void updateScoreboard() {
-			text = "Puntuación: " + score + "  Vidas: ";
+			text = "Puntuaciï¿½n: " + score + "  Vidas: ";
 
 			if(nivel == 1 && win)
 				text = "NIVEL 1";
@@ -263,6 +297,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 		void draw(Graphics g) {
 			ImageIcon paleta = new ImageIcon(new ImageIcon(getClass().getResource(PALETA)).getImage());			
+
 			g.drawImage(paleta.getImage(), (int) (left()), (int) (top()), (int) sizeX, (int) sizeY, null);
 		}
 	}
@@ -279,15 +314,12 @@ public class Arkanoid extends JFrame implements KeyListener {
 		}
 
 		void draw(Graphics g) {
-
 			ImageIcon bloque_verde = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEVERDE)).getImage());			
 			ImageIcon bloque_azul = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEAZUL)).getImage());
 			ImageIcon bloque_rojo = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEROJO)).getImage());	
 			ImageIcon bloque_amarillo = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEAMARILLO)).getImage());
 			ImageIcon bloque_naranja = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUENARANJA)).getImage());
-			ImageIcon bloque_inmortal = new ImageIcon(new ImageIcon(getClass().getResource(BLOQUEINMORTAL)).getImage());
 
-			/* DEPENDIENDO DE LA ALTURA "Y" */
 
 			if(y == 76) {
 				g.setColor(Color.BLUE);
@@ -311,7 +343,6 @@ public class Arkanoid extends JFrame implements KeyListener {
 			}
 			else {
 				g.setColor(Color.gray);
-				g.drawImage(bloque_inmortal.getImage(), (int) left(), (int) top(), (int) sizeX, (int) sizeY, null);
 			}
 		}
 	}
@@ -330,6 +361,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 		void draw(Graphics g) {
 			ImageIcon bola = new ImageIcon(new ImageIcon(getClass().getResource(BOLA)).getImage());			
+
 			g.drawImage(bola.getImage(), (int) left(), (int) top(), (int) radius * 2,(int) radius * 2, null);
 		}
 
@@ -337,8 +369,6 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 			x += velocityX * FT_STEP;
 			y += velocityY * FT_STEP;
-
-			/* SI BOOLEAN augVelocidad ESTA TRUE TENDRÁ UN EMPUJE DE VELOCIDAD, CAUSADO PORQUE ANTES CHOCÓ CON LA ESQUINA DE LA PALETA */
 
 			if (left() < 0 && !augVelocidad) {
 				velocityX = VELOCIDAD_BOLA;
@@ -399,45 +429,36 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 		double calculo = (mBall.x - mPaddle.x);
 
-		/* CHOQUE CON EL CENTRO */
-
 		if(calculo >= -10.0 && calculo <= 10){
+			System.out.println("EN EL CENTRO");
 			if(derecha)
 				mBall.velocityX = -VELOCIDAD_BOLA*0.4;
 			else
 				mBall.velocityX = VELOCIDAD_BOLA*0.4;
-		}
-
-		/* CHOQUE CON EL ESQUINA DERECHA */
-
+		} 
 		else if(calculo <= 40.0 && calculo >= 30.0){
+			System.out.println("ESQUINA DERECHA");
 			if(derecha)
 				mBall.velocityX = -VELOCIDAD_BOLA*2;
 			else
 				mBall.velocityX = VELOCIDAD_BOLA*2;
 			augVelocidad = true;
-
-			/* CHOQUE CON EL ESQUINA IZQUIERDA */
-
 		} else if(calculo <= -30.0 && calculo >= -40.0){
+			System.out.println("ESQUINA IZQUIERDA");
 			if(derecha)
 				mBall.velocityX = -VELOCIDAD_BOLA*2;
 			else
 				mBall.velocityX = VELOCIDAD_BOLA*2;
 			augVelocidad = true;
-
-			/* CHOQUE CON LA MEDIA(NI EN LA ESQUINA NI EN EL CENTRO) IZQUIERDA */
-
 		} else if (calculo <= -11.0 && calculo >= -29.0) {
+			System.out.println("IZQUIERDA MEDIA");
 			if(derecha)
 				mBall.velocityX = -VELOCIDAD_BOLA;
 			else
 				mBall.velocityX = VELOCIDAD_BOLA;	
 		}
-
-		/* CHOQUE CON LA MEDIA(NI EN LA ESQUINA NI EN EL CENTRO) DERECHA */
-
 		else {
+			System.out.println("DERECHA MEDIA");
 			if(derecha)
 				mBall.velocityX = -VELOCIDAD_BOLA;
 			else
@@ -446,15 +467,12 @@ public class Arkanoid extends JFrame implements KeyListener {
 	}
 
 	void testCollision(Brick mBrick, Ball mBall, ScoreBoard scoreboard) {
-
 		if (!isIntersecting(mBrick, mBall))
 			return;
 
-		/* SI EL BLOQUE ESTA EN Y = 250, DONDE SE UBICA EL INMORTAL, NO SE ROMPE */
-		if(mBrick.y != 250) {
-			mBrick.destroyed = true;
-			scoreboard.increaseScore();
-		}
+		mBrick.destroyed = true;
+
+		scoreboard.increaseScore();
 
 		double overlapLeft = mBall.right() - mBrick.left();
 		double overlapRight = mBrick.right() - mBall.left();
@@ -553,27 +571,9 @@ public class Arkanoid extends JFrame implements KeyListener {
 				bricks.remove(29);
 		}
 
-		/* AÑADIMOS LOS BLOQUES INMORTALES, EN POSICION ALEATORIA, SI LA POSICION ES MAYOR QUE 400 
-		 * ES DECIR QUE LA MITAD, LOS BLOQUES SIGUIENTES SE PONDRAN EN EL LADO OPUESTO */
-
-		if(nivel == 1) {
-			int posicion = (int) (Math.random() * 600) + 100;
-
-			bricks.add(new Brick(posicion,250));
-
-			if(posicion > 400) {
-				bricks.add(new Brick(posicion-150,250));
-				bricks.add(new Brick(posicion-300,250));
-			}
-			else {
-				bricks.add(new Brick(posicion+150,250));
-				bricks.add(new Brick(posicion+300,250));
-			}
-		}
-
 	}
 
-	public Arkanoid() {
+	public Arkanoid2() {
 
 		ImageIcon icono = new ImageIcon(new ImageIcon(getClass().getResource(ICONO)).getImage());
 
@@ -592,7 +592,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 	}
 
 	void run() {
-
+	    
 		for(int i = 0; i < VIDAS_JUGADOR; i++)
 			listaImagenes.add(corazon);
 
@@ -647,8 +647,6 @@ public class Arkanoid extends JFrame implements KeyListener {
 					e.printStackTrace();
 				}
 
-				/* INICIAMOS EL NIVEL 1 */
-
 			} else if(nivel == 1) {
 
 				actualizado = true;
@@ -685,7 +683,6 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 				scoreboard.win = false;
 				VELOCIDAD_PALETA = 0.7;
-				ANCHURA_PALETA = 70.0;
 
 				initializeBricks(bricks);
 				scoreboard.updateScoreboard();
@@ -855,9 +852,95 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 	}
 
-	public static void main(String[] args) {
+	/* 
+	 * Metodes serial
+	 */
+	public void initialize() {
+	    CommPortIdentifier portId = null;
+	    Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
 
-		new Arkanoid().run();
+	    //First, Find an instance of serial port as set in PORT_NAMES.
+	    while (portEnum.hasMoreElements()) {
+	        CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
+	        for (String portName : PORT_NAMES) {
+	            if (currPortId.getName().equals(portName)) {
+	                portId = currPortId;
+	                break;
+	            }
+	        }
+	    }
+	    if (portId == null) {
+	        System.out.println("Could not find COM port.");
+	        return;
+	    }
+
+	    try {
+	        serialPort = (SerialPort) portId.open(this.getClass().getName(),
+	                TIME_OUT);
+	        serialPort.setSerialPortParams(DATA_RATE,
+	                SerialPort.DATABITS_8,
+	                SerialPort.STOPBITS_1,
+	                SerialPort.PARITY_NONE);
+
+	        // open the streams
+	        input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
+	        output = serialPort.getOutputStream();
+
+	        serialPort.addEventListener(this);
+	        serialPort.notifyOnDataAvailable(true);
+	    } catch (Exception e) {
+	        System.err.println(e.toString());
+	    }
+	}
+
+
+	public synchronized void close() {
+	    if (serialPort != null) {
+	        serialPort.removeEventListener();
+	        serialPort.close();
+	    }
+	}
+	public synchronized void serialEvent(SerialPortEvent oEvent) {
+		KeyEvent e;
+		if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+			try {
+				String inputLine=null;
+				if (input.ready()) {
+					inputLine = input.readLine();
+					//System.out.println(inputLine);
+					if (inputLine.equals("esquerra")) {
+					    /*e = new KeyEvent(this, KeyEvent.KEY_PRESSED, 0, 0, 37,(char)KeyEvent.VK_LEFT);
+					    keyPressed(e);*/
+						paddle.moveLeft();
+					}
+					else if (inputLine.equals("dreta")) { 
+						//e = new KeyEvent(this, 1, 20, 1, 39,(char)KeyEvent.VK_RIGHT);
+						/*e = new KeyEvent(this, KeyEvent.KEY_PRESSED, 0, 0, 39,(char)KeyEvent.VK_RIGHT);
+						keyPressed(e);*/
+						paddle.moveRight();
+					}
+					else if (inputLine.equals("res")) {
+						paddle.stopMove();
+					}
+				}
+
+			} catch (Exception exc) {
+				System.err.println(exc.toString());
+			}
+		} else 
+			paddle.stopMove();
+		// Ignore all the other eventTypes, but you should consider the other ones.
+	}
+
+	/*
+	 * Metodes serial
+	 *
+	 */
+	
+	public static void main(String[] args) {
+		Arkanoid2 arkanoid=new Arkanoid2();
+		//arkanoid.initialize();
+		arkanoid.run();
 
 	}
 }
