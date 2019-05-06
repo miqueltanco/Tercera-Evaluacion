@@ -50,24 +50,24 @@ public class Arkanoid extends JFrame implements KeyListener {
 
 	public static final String FONT = "Conthrax sb";
 
-	public static final String CORAZON = "\\Items\\corazonmediano.png";
+	public static final String CORAZON = "\\Items\\corazonmediano.PNG";
 
-	public static final String SONIDOMUERTE = ".\\bin\\Arkanoid\\Items\\sonidomuerte.mp3"; //EN DESUSO
-	public static final String VICTORIA = ".\\bin\\Arkanoid\\Items\\victoria.mp3";
-	public static final String AMBIENTE = ".\\bin\\Arkanoid\\Items\\ambiente.wav";
+	public static final String SONIDOMUERTE = ".\\bin\\Arkanoid\\Items\\sonidomuerte.MP3"; //EN DESUSO
+	public static final String VICTORIA = ".\\bin\\Arkanoid\\Items\\victoria.MP3";
+	public static final String AMBIENTE = ".\\bin\\Arkanoid\\Items\\ambiente.WAV";
 
-	public static final String BACKGROUND = "\\Items\\imagen 3.png";
-	public static final String ICONO = "\\Items\\icono.png";
+	public static final String BACKGROUND = "\\Items\\imagen 3.PNG";
+	public static final String ICONO = "\\Items\\icono.PNG";
 
-	public static final String PALETA = "\\Items\\paleta.png";
-	public static final String BOLA = "\\Items\\bola.png";
+	public static final String PALETA = "\\Items\\paleta.PNG";
+	public static final String BOLA = "\\Items\\bola.PNG";
 
-	public static final String BLOQUEVERDE = "\\Items\\bloqueverde.png";
-	public static final String BLOQUEROJO = "\\Items\\bloquerojo.png";
-	public static final String BLOQUEAMARILLO = "\\Items\\bloqueamarillo.png";
-	public static final String BLOQUEAZUL = "\\Items\\bloqueazul.png";
-	public static final String BLOQUENARANJA = "\\Items\\bloquenaranja.png";
-	public static final String BLOQUEINMORTAL = "\\Items\\bloqueinmortal.png";
+	public static final String BLOQUEVERDE = "\\Items\\bloqueverde.PNG";
+	public static final String BLOQUEROJO = "\\Items\\bloquerojo.PNG";
+	public static final String BLOQUEAMARILLO = "\\Items\\bloqueamarillo.PNG";
+	public static final String BLOQUEAZUL = "\\Items\\bloqueazul.PNG";
+	public static final String BLOQUENARANJA = "\\Items\\bloquenaranja.PNG";
+	public static final String BLOQUEINMORTAL = "\\Items\\bloqueinmortal.PNG";
 
 	/* VARIABLES DEL JUEGO */
 
@@ -661,7 +661,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 					VELOCIDAD_BOLA = 0.5;
 
 				scoreboard.win = false;
-				VELOCIDAD_PALETA = 0.6;
+				VELOCIDAD_PALETA = 0.8;
 
 				initializeBricks(bricks);
 				scoreboard.updateScoreboard();
@@ -684,7 +684,7 @@ public class Arkanoid extends JFrame implements KeyListener {
 					VELOCIDAD_BOLA = 0.6;
 
 				scoreboard.win = false;
-				VELOCIDAD_PALETA = 0.7;
+				VELOCIDAD_PALETA = 0.8;
 				ANCHURA_PALETA = 70.0;
 
 				initializeBricks(bricks);
